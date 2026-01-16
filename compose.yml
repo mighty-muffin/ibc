@@ -7,7 +7,7 @@ services:
     image: ghcr.io/mighty-muffin/ibc:latest
     restart: unless-stopped
     ports:
-      - 80:8000
+      - 8000:8000
     networks:
       - cloudflared
 

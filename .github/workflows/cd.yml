@@ -106,7 +106,7 @@ jobs:
       - name: Update image tag in compose.yml
         if: inputs.env == 'dev'
         run: |
-          sed -i 's|ghcr.io/mighty-muffin/ibc:latest|ghcr.io/mighty-muffin/ibc:${{ inputs.image-tag }}|g' compose.yml
+          sed -i 's|ghcr.io/mighty-muffin/ibc:latest|ghcr.io/mighty-muffin/ibc:gha-${{ github.run_id }}|g' compose.yml
         shell: bash
 
       - name: Docker Compose Upload and Deploy
