@@ -15,8 +15,8 @@ This command starts the local dev server:
 
 - The application will be available at [http://localhost:8000](http://localhost:8000).
 - Use the following credentials to log in to the application:
-  - **Username**: john
-  - **Password**: test
+  - **Username**: guillaume
+  - **Password**: timinou
 
 ## Common Management Commands
 

@@ -45,5 +45,5 @@ This command will run the container with:
 - `--name insecure-bank`: Assign a name to the container
 - The application will be available at [http://localhost:8000](http://localhost:8000)
 - Use the following credentials to log in to the application:
-  - **Username**: john
-  - **Password**: test
+  - **Username**: guillaume
+  - **Password**: timinou
