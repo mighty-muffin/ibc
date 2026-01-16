@@ -2,7 +2,7 @@
 name = "insecure-bank-corp"
 description = "Insecure Bank Corp application, a deliberately vulnerable Django-based web application designed for security testing and educational purposes."
 readme = "README.md"
-version = "0.1.0"
+version = "0.2.0"
 requires-python = ">=3.10"
 dependencies = [
     "asgiref==3.7.2",
@@ -70,7 +70,7 @@ skips = ['src/tests/*_test.py', 'test_*.py']
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version = "0.2.0"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",
