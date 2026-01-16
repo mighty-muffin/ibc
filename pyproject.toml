@@ -5,6 +5,12 @@ readme = "README.md"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
+    "asgiref==3.7.2",
+    "django==4.2.4,<5.0.0",
+    "pycryptodome==3.18.0",
+    "pyyaml==5.3.1",
+    "sqlparse==0.4.2",
+    "typing-extensions==4.7.1",
 ]
 
 
@@ -16,18 +22,24 @@ build = [
 ]
 dev = [
     "build==0.10.0",
+    "click==8.1.6",
+    "faker>=33.1.0",
     "ggshield>=1.10.8",
     "pathspec==0.11.2",
     "pip-tools==7.2.0",
     "platformdirs==3.10.0",
     "playwright>=1.57.0",
     "pre-commit>=4.5.0",
+    "pyproject-hooks==1.0.0",
     "pytest-cov>=7.0.0",
     "pytest-django>=4.11.1",
     "pytest-mock>=3.15.1",
     "pytest-playwright>=0.7.2",
     "pytest-xdist>=3.8.0",
     "pytest>=8.4.2",
+    "ruff>=0.14.4",
+    "tomli==2.0.1",
+    "ty>=0.0.1a34",
 ]
 docs = [
     "mkdocs>=1.5.0",
@@ -39,6 +51,22 @@ docs = [
 required-version = ">=0.9.18"
 
 
+[tool.bandit]
+severity = "HIGH"
+confidence = "HIGH"
+exclude-dirs = [
+    "__pycache__",
+    ".venv",
+    "build",
+    "install",
+    "scripts",
+    "tests",
+    ]
+
+
+[tool.bandit.assert_used]
+skips = ['src/tests/*_test.py', 'test_*.py']
+
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -47,3 +75,109 @@ tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",
     ]
+
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.test_settings"
+python_paths = ["src"]
+testpaths = ["tests"]
+pythonpath = "src"
+addopts = [
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html:tests/coverage/html",
+    "--cov-report=xml:tests/coverage/coverage.xml",
+    "--cov-fail-under=92",
+    "--numprocesses", "auto",
+    "--strict-markers",
+    "--tb=short",
+    "--verbose",
+    ]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "security: Security-focused tests",
+    "e2e: End-to-end tests",
+    ]
+filterwarnings = [
+    "ignore::django.utils.deprecation.RemovedInDjango50Warning",
+    "ignore::DeprecationWarning",
+    ]
+
+
+[tool.ruff]
+extend-exclude = [
+    "__pycache__",
+    ".venv",
+    "install",
+    "tests",
+    "scripts",
+    ]
+line-length = 128
+src = [
+    "src",
+    ]
+target-version = "py310"
+
+
+[tool.ruff.lint]
+extend-select = [
+  "C4",
+  "D200",
+  "D201",
+  "D204",
+  "D205",
+  "D206",
+  "D210",
+  "D211",
+  "D213",
+  "D300",
+  "D400",
+  "D402",
+  "D403",
+  "D404",
+  "D419",
+  "E",
+  "F",
+  "FURB",
+  "G010",
+  "I",
+  "INP001",
+  "N805",
+  "PERF101",
+  "PERF102",
+  "PERF401",
+  "PERF402",
+  "PGH004",
+  "PGH005",
+  "PIE794",
+  "PIE796",
+  "PIE807",
+  "PIE810",
+  "PLR",
+  "RET502",
+  "RET503",
+  "RET504",
+  "RET505",
+  "RUF015",
+  "RUF032",
+  "RUF033",
+  "RUF034",
+  "RUF041",
+  "RUF046",
+  "RUF100",
+  "S101",
+  "T20",
+  "UP",
+  "W",
+]
+
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+  "S101"
+  ]
