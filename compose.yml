@@ -5,6 +5,7 @@ services:
   ibc:
     container_name: ibc
     image: ghcr.io/mighty-muffin/ibc:latest
+    pull_policy: always
     restart: unless-stopped
     ports:
       - 8000:8000
@@ -13,6 +14,7 @@ services:
 
   cloudflare-tunnel:
     image: docker.io/cloudflare/cloudflared:latest
+    pull_policy: always
     container_name: cloudflare-tunnel
     restart: unless-stopped
     command: tunnel run
