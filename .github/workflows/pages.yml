@@ -1,0 +1,56 @@
+---
+name: CI - GitHub Pages
+
+on: # yamllint disable-line rule:truthy
+  push:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+
+  pages:
+    name: GH Pages Deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        shell: bash
+
+      - name: Setup Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: 3.14
+
+      - run: echo "CACHE_ID=$(date --utc '+%V')" >> $GITHUB_ENV
+
+      - name: Install dependencies with caching
+        uses: actions/cache@v5
+        with:
+          key: mkdocs-material-${{ env.CACHE_ID }}-{{ hashFiles('**/requirements.txt') }}
+          path: ~/.cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material
+        shell: bash
+
+      - name: Deploy MKDocs to GitHub Pages
+        run: |
+          mkdocs gh-deploy --config-file mkdocs.yml --force
+        shell: bash

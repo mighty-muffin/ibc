@@ -1,0 +1,49 @@
+[project]
+name = "insecure-bank-corp"
+description = "Insecure Bank Corp application, a deliberately vulnerable Django-based web application designed for security testing and educational purposes."
+readme = "README.md"
+version = "0.0.1"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+
+[dependency-groups]
+build = [
+    "build==0.10.0",
+    "packaging==23.1",
+    "wheel==0.41.0",
+]
+dev = [
+    "build==0.10.0",
+    "ggshield>=1.10.8",
+    "pathspec==0.11.2",
+    "pip-tools==7.2.0",
+    "platformdirs==3.10.0",
+    "playwright>=1.57.0",
+    "pre-commit>=4.5.0",
+    "pytest-cov>=7.0.0",
+    "pytest-django>=4.11.1",
+    "pytest-mock>=3.15.1",
+    "pytest-playwright>=0.7.2",
+    "pytest-xdist>=3.8.0",
+    "pytest>=8.4.2",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.5.0",
+]
+
+
+[tool.uv]
+required-version = ">=0.9.18"
+
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.1"
+tag_format = "v$version"
+version_files = [
+    "pyproject.toml:version",
+    ]

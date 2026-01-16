@@ -1,0 +1,27 @@
+---
+name: ibc
+
+services:
+  ibc:
+    container_name: ibc
+    image: ghcr.io/mighty-muffin/ibc:latest
+    restart: unless-stopped
+    ports:
+      - 80:8000
+    networks:
+      - cloudflared
+
+  cloudflare-tunnel:
+    image: docker.io/cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CF_TUNNEL_TOKEN}
+      TZ: America/New_York
+    networks:
+      - cloudflared
+
+networks:
+  cloudflared:
+    name: cloudflared

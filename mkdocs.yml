@@ -1,0 +1,27 @@
+---
+site_name: IBC Documentation
+site_description: Documentation for the Insecure Bank application
+site_author: Mighty Muffin
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+  features:
+    - content.code.annotate
+    - content.code.copy
+
+markdown_extensions:
+  - footnotes:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: README.md

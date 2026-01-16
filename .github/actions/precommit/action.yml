@@ -1,0 +1,18 @@
+---
+name: "Pre-Commit Check"
+description: "Run pre-commit hooks on the codebase"
+author: "mighty-muffin"
+
+inputs:
+  skip:
+    description: Push image to registry(s)
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Run Pre-Commit Checks
+      uses: j178/prek-action@91fd7d7cf70ae1dee9f4f44e7dfa5d1073fe6623 # v1.0.11
+      env:
+        SKIP: ${{ inputs.skip }}
