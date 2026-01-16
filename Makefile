@@ -5,6 +5,7 @@ help:
 	@echo "  make all                Setup & Run"
 	@echo "  make build              Build the package wheel"
 	@echo "  make check              CI: Lint the code"
+	@echo "  make docker             Build & Run the container"
 	@echo "  make format             CI: Format the code"
 	@echo "  make publish            Publish package"
 	@echo "  make pytest             CI: Run test and calculate coverage"
