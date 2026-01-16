@@ -32,7 +32,6 @@
 ## Login credentials
 
 ```text
-Username: john
-Password: test
+Username: guillaume
+Password: timinou
 ```
-# ibc
