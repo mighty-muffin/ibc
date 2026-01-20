@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.2.1 (2026-01-20)
+
+### Fix
+
+- production release
+
 ## v0.2.0 (2026-01-16)
 
 ### Feat
