@@ -135,6 +135,7 @@ jobs:
           curl -sSfL https://downloads.snyk.io/cli/preview/snyk-linux -o snyk
           chmod +x snyk
           sudo mv snyk /usr/local/bin/
+          snyk auth ${{ secrets.SNYK_TOKEN }}
         shell: bash
 
       - name: Run SAST
