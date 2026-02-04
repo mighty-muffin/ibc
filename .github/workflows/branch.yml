@@ -72,7 +72,7 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
-          version: 0.9.18
+          version: 0.9.23
 
       - name: Set up Python
         id: setup-python
