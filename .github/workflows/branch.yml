@@ -130,18 +130,25 @@ jobs:
           uv pip install --no-cache-dir -r requirements.txt
         shell: bash
 
+      - name: Install Snyk CLI
+        run: |
+          curl -sSfL https://downloads.snyk.io/cli/preview/snyk-linux -o snyk
+          chmod +x snyk
+          sudo mv snyk /usr/local/bin/
+        shell: bash
+
       - name: Run SAST
         id: sast
         run: |
           echo Run SAST
-          echo "::warning::Must implement a code scanning mechanism."
+          snyk code test
         shell: bash
 
       - name: Run SCA
         id: sca
         run: |
           echo Run SCA
-          echo "::warning::Must implement a dependencies scanning mechanism."
+          SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk test --experimental --file=./uv.lock --org=e7c7e349-c0c7-412e-8438-c4f29119491e
         shell: bash
 
   docker_build:
