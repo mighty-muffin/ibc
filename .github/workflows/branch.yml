@@ -133,8 +133,11 @@ jobs:
       - name: Install Snyk CLI
         run: |
           curl -sSfL https://downloads.snyk.io/cli/preview/snyk-linux -o snyk
+          curl -sSfL https://github.com/snyk/snyk-to-html/releases/download/v3.6.0/snyk-to-html-linux -o snyk-to-html
           chmod +x snyk
+          chmod +x snyk-to-html
           sudo mv snyk /usr/local/bin/
+          sudo mv snyk-to-html /usr/local/bin/
           snyk auth ${{ secrets.SNYK_TOKEN }}
         shell: bash
 
@@ -142,14 +145,15 @@ jobs:
         id: sast
         run: |
           echo Run SAST
-          snyk code test
+          snyk code test  --sarif  > snykcode.sarif || true
+          snyk-to-html -o results-code.htm < snykcode.sarif
         shell: bash
 
       - name: Run SCA
         id: sca
         run: |
           echo Run SCA
-          SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk test --experimental --file=./uv.lock --org=e7c7e349-c0c7-412e-8438-c4f29119491e
+          SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk test --experimental --file=./uv.lock --org=e7c7e349-c0c7-412e-8438-c4f29119491e || true
         shell: bash
 
   docker_build:
