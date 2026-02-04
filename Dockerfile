@@ -3,18 +3,11 @@ FROM python:3.10.11-alpine3.18 AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.9.18@sha256:5713fa8217f92b80223bc83aac7db36ec80a84437dbc0d04bbc659cae030d8c9 /uv /usr/local/bin/uv
 
-# Add Zscaler certificate for corporate proxy
-COPY zscaler-root-ca.pem /usr/local/share/ca-certificates/zscaler-root-ca.crt
-RUN apk add --no-cache ca-certificates && \
-  update-ca-certificates
-
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV UV_COMPILE_BYTECODE=1
 ENV VIRTUAL_ENV=/app/.venv
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
 
@@ -30,11 +23,6 @@ RUN uv pip install --no-cache-dir httplib2==0.14.0 pycrypto==2.6.1 urllib3==1.24
 # Runtime stage
 FROM python:3.10.11-alpine3.18 AS runtime
 
-# Add Zscaler certificate for corporate proxy
-COPY zscaler-root-ca.pem /usr/local/share/ca-certificates/zscaler-root-ca.crt
-RUN apk add --no-cache ca-certificates && \
-  update-ca-certificates
-
 ARG GIT_COMMIT="unknown"
 ARG REPO_URL=""
 
@@ -43,8 +31,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV REPO_URL=${REPO_URL}
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
 
