@@ -146,7 +146,7 @@ jobs:
         run: |
           echo Run SAST
           snyk code test  --sarif  > snykcode.sarif || true
-          snyk-to-html -o results-code.htm < snykcode.sarif
+          snyk-to-html -o results-code.html < snykcode.sarif
         shell: bash
 
       - name: Run SCA
@@ -170,7 +170,7 @@ jobs:
           name: results-code
           path: ./results-code.html
           if-no-files-found: error
-          
+
   docker_build:
     needs:
       - code_build
