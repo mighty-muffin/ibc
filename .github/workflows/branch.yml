@@ -164,11 +164,18 @@ jobs:
           SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk sbom monitor --experimental --file=ibc-sbom.json  --org=e7c7e349-c0c7-412e-8438-c4f29119491e  --remote-repo-url=ibc-sbom || true
         shell: bash
 
-      - name: Use the Upload Artifact GitHub Action
+      - name: Upload SAST Results
         uses: actions/upload-artifact@v4
         with:
           name: results-code
           path: ./results-code.html
+          if-no-files-found: error
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: ./ibc-sbom.json
           if-no-files-found: error
 
   docker_build:
@@ -221,6 +228,6 @@ jobs:
         id: container
         run: |
           echo Run Container Scan
-          snyk container monitor local-scan-image:latest || true
+          snyk container monitor local-scan-image:latest --org=e7c7e349-c0c7-412e-8438-c4f29119491e || true
         shell: bash
 
