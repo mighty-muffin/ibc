@@ -160,9 +160,17 @@ jobs:
         id: sbom
         run: |
           echo Run SBOM
-          SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk sbom monitor --experimental --file=./uv.lock --org=e7c7e349-c0c7-412e-8438-c4f29119491e --target-reference=ibc-sbom || true
+          SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk sbom  --format=cyclonedx1.4+json --json-file-output=ibc-sbom.json --org=e7c7e349-c0c7-412e-8438-c4f29119491e || true
+          SNYK_ENABLE_EXPERIMENTAL_UV_SUPPORT=true snyk sbom monitor --experimental --file=ibc-sbom.json  --org=e7c7e349-c0c7-412e-8438-c4f29119491e  --remote-repo-url=ibc-sbom || true
         shell: bash
 
+      - name: Use the Upload Artifact GitHub Action
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-code
+          path: ./results-code.html
+          if-no-files-found: error
+          
   docker_build:
     needs:
       - code_build
@@ -216,9 +224,3 @@ jobs:
           snyk container monitor local-scan-image:latest || true
         shell: bash
 
-      - name: Use the Upload Artifact GitHub Action
-        uses: actions/upload-artifact@v4
-        with:
-          name: results-code
-          path: ./results-code.html
-          if-no-files-found: error
