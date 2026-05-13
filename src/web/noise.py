@@ -27,6 +27,11 @@ class LearningNoiseEvent:
     created_at: str
 
 
+def _normalize_tags(tags: list[str] | None) -> tuple[str, ...]:
+    """Normalize tags into a sorted and deduplicated tuple."""
+    return tuple(sorted(set(tags or [])))
+
+
 def make_learning_noise_event(
     username: str,
     action: str,
@@ -34,12 +39,11 @@ def make_learning_noise_event(
     severity: str = "info",
 ) -> LearningNoiseEvent:
     """Build a normalized learning event without affecting application logic."""
-    normalized_tags = tuple(sorted(set(tags or [])))
     return LearningNoiseEvent(
         username=username,
         action=action,
         severity=severity,
-        tags=normalized_tags,
+        tags=_normalize_tags(tags),
         created_at=datetime.now(timezone.utc).isoformat(),
     )
 
@@ -52,8 +56,8 @@ def amplify_learning_noise(event: LearningNoiseEvent, copy_count: int = 3) -> li
     Each returned dictionary includes all ``LearningNoiseEvent`` fields plus
     a one-based ``copy_index`` key.
     """
-    safe_copies = max(1, copy_count)
-    return [{**asdict(event), "copy_index": index + 1} for index in range(safe_copies)]
+    normalized_copy_count = max(1, copy_count)
+    return [{**asdict(event), "copy_index": index + 1} for index in range(normalized_copy_count)]
 
 
 def summarize_learning_noise(events: list[LearningNoiseEvent]) -> dict[str, int]:
