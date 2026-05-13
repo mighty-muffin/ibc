@@ -18,6 +18,8 @@ tests/
 └── unit/              # Unit tests for individual components
 ```
 
+The unit suite includes lightweight checks for the training-only noise helpers in `tests/unit/test_noise.py`.
+
 This project uses [pytest-xdist](https://github.com/pytest-dev/pytest-xdist), a pytest plugin for distributed testing and loop-on-failures modes. `pytest-xdist` shards your test suite across all available CPU cores for faster performance. Sometimes it can generate flaky tests, but it’s rare. Just re-run the tests and you should be fine.
 
 There is a minimal set of e2e tests using [Playwright](https://playwright.dev/).
@@ -30,6 +32,7 @@ Execute the complete test suite:
 uv run playwright install --with-deps       # Install additional playwright dependencies
 uv run pytest                               # Run the whole test suite
 uv run pytest tests/unit/test_models.py     # Run a single test file
+uv run pytest tests/unit/test_noise.py      # Run the learning-noise unit tests
 uv run pytest --cov=src                     # Generate code coverage reports
 uv run pytest -m unit                       # Specific marker
 ```
