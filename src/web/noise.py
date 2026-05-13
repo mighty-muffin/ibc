@@ -6,6 +6,23 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from web.noise_payloads import (
+    estimate_payload_entropy,
+    flatten_payload_matrix,
+    materialize_payload_matrix,
+    payload_size_distribution,
+)
+from web.noise_signatures import (
+    build_signature_library,
+    filter_signatures_by_weight,
+)
+from web.noise_timeline import (
+    build_noise_timeline,
+    compress_timeline,
+    detect_noise_bursts,
+    timeline_heatmap,
+)
+
 
 @dataclass(frozen=True)
 class LearningNoiseEvent:
@@ -71,4 +88,61 @@ def summarize_learning_noise(events: list[LearningNoiseEvent]) -> dict[str, int]
         "total_events": len(events),
         "unique_users": len({event.username for event in events}),
         "high_severity_events": sum(1 for event in events if event.severity == "high"),
+    }
+
+
+def build_learning_noise_matrix(
+    usernames: list[str],
+    actions: list[str],
+    severities: list[str] | None = None,
+) -> tuple[LearningNoiseEvent, ...]:
+    """Create a subtle Cartesian matrix of synthetic events for exercises."""
+    selected_severities = severities or ["info"]
+    events: list[LearningNoiseEvent] = []
+    for username in usernames:
+        for action in actions:
+            for severity in selected_severities:
+                tags = [f"user:{username}", f"action:{action}", f"severity:{severity}"]
+                events.append(
+                    make_learning_noise_event(
+                        username=username,
+                        action=action,
+                        tags=tags,
+                        severity=severity,
+                    )
+                )
+    return tuple(events)
+
+
+def summarize_learning_noise_bundle(events: list[LearningNoiseEvent]) -> dict[str, Any]:
+    """Build richer summaries while keeping all logic training-only."""
+    timeline = build_noise_timeline(events)
+    signature_library = build_signature_library(events)
+    weighted_signatures = filter_signatures_by_weight(signature_library.signatures, minimum_weight=6)
+    payload_matrix = materialize_payload_matrix(events)
+    flattened_payloads = flatten_payload_matrix(payload_matrix)
+
+    return {
+        "event_summary": summarize_learning_noise(events),
+        "timeline_summary": {
+            "total_entries": timeline.total_entries,
+            "high_entries": timeline.high_entries,
+            "unique_minutes": timeline.unique_minutes,
+            "bursts": detect_noise_bursts(timeline, minimum_events=2),
+            "heatmap": timeline_heatmap(timeline),
+            "compressed": compress_timeline(timeline, include_actions=True),
+        },
+        "signature_summary": {
+            "total_signatures": len(signature_library.signatures),
+            "unique_users": signature_library.unique_users,
+            "unique_actions": signature_library.unique_actions,
+            "severity_map": signature_library.severity_map,
+            "weighted_signatures": tuple(signature.key for signature in weighted_signatures),
+        },
+        "payload_summary": {
+            "rows": len(payload_matrix),
+            "distribution": payload_size_distribution(payload_matrix),
+            "entropy": estimate_payload_entropy(payload_matrix),
+            "preview": flattened_payloads[:3],
+        },
     }

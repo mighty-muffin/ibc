@@ -2,9 +2,14 @@
 
 from web.noise import (
     amplify_learning_noise,
+    build_learning_noise_matrix,
     make_learning_noise_event,
     summarize_learning_noise,
+    summarize_learning_noise_bundle,
 )
+
+MATRIX_SIZE = 8
+BUNDLE_EVENT_COUNT = 3
 
 
 def test_make_learning_noise_event_normalizes_tags():
@@ -43,3 +48,34 @@ def test_summarize_learning_noise_counts_users_and_high_events():
         "unique_users": 2,
         "high_severity_events": 2,
     }
+
+
+def test_build_learning_noise_matrix_creates_cartesian_events():
+    """The matrix helper should produce username/action/severity combinations."""
+    events = build_learning_noise_matrix(
+        usernames=["alice", "john"],
+        actions=["login_attempt", "transfer_submit"],
+        severities=["info", "high"],
+    )
+
+    assert len(events) == MATRIX_SIZE
+    assert {event.username for event in events} == {"alice", "john"}
+    assert {event.severity for event in events} == {"info", "high"}
+
+
+def test_summarize_learning_noise_bundle_returns_expected_sections():
+    """Bundle summary should expose timeline, signature, and payload sections."""
+    events = [
+        make_learning_noise_event("alice", "dashboard_open", severity="info"),
+        make_learning_noise_event("alice", "transfer_submit", severity="high"),
+        make_learning_noise_event("john", "login_attempt", severity="low"),
+    ]
+
+    bundle = summarize_learning_noise_bundle(events)
+
+    assert "event_summary" in bundle
+    assert "timeline_summary" in bundle
+    assert "signature_summary" in bundle
+    assert "payload_summary" in bundle
+    assert bundle["event_summary"]["total_events"] == BUNDLE_EVENT_COUNT
+    assert bundle["payload_summary"]["rows"] == BUNDLE_EVENT_COUNT
