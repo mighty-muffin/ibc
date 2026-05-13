@@ -9,7 +9,16 @@ from typing import Any
 
 @dataclass(frozen=True)
 class LearningNoiseEvent:
-    """Represent a synthetic event used in learning exercises."""
+    """
+    Represent a synthetic event used in learning exercises.
+
+    Attributes:
+        username: Account name associated with the practice event.
+        action: Human-readable action label (for example, ``login_attempt``).
+        severity: Free-form level used by exercises (for example, ``info`` or ``high``).
+        tags: Sorted unique training labels tied to the event.
+        created_at: ISO-8601 timestamp for when the event payload was created.
+    """
 
     username: str
     action: str
@@ -36,7 +45,11 @@ def make_learning_noise_event(
 
 
 def amplify_learning_noise(event: LearningNoiseEvent, copies: int = 3) -> list[dict[str, Any]]:
-    """Expand one event into many payloads for repetitive training scenarios."""
+    """
+    Expand one event into many payloads for repetitive training scenarios.
+
+    When ``copies`` is zero or negative, the function still returns one payload.
+    """
     safe_copies = max(1, copies)
     return [{**asdict(event), "copy_index": index + 1} for index in range(safe_copies)]
 
