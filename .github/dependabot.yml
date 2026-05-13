@@ -5,13 +5,13 @@ registries:
   docker-registry:
     type: docker-registry
     url: https://registry.hub.docker.com
-    username: ${{secrets.DOCKER_USERNAME}}
-    password: ${{secrets.DOCKER_PASSWORD}}
+    # username: ${{secrets.DOCKER_USERNAME}}
+    # password: ${{secrets.DOCKER_PASSWORD}}
   pypi-registry:
     type: python-index
     url: https://pypi.org/simple
-    username: ${{secrets.PYPI_USERNAME}}
-    password: ${{secrets.PYPI_PASSWORD}}
+    # username: ${{secrets.PYPI_USERNAME}}
+    # password: ${{secrets.PYPI_PASSWORD}}
 
 updates:
   - package-ecosystem: "docker"
