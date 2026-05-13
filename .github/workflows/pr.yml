@@ -213,3 +213,19 @@ jobs:
           # shellcheck disable=SC2086
           echo "image-tag=${{ steps.docker_meta.outputs.version }}" >> $GITHUB_OUTPUT
         shell: bash
+
+  gating:
+    needs:
+      - code_scan
+      - docker_build
+      - secret
+    name: Gating
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+
+      - name: Run Gating Check
+        run: |
+          echo Run Gating Check
+        shell: bash
