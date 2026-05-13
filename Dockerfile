@@ -3,6 +3,11 @@ FROM python:3.10.11-alpine3.18 AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.9.18@sha256:5713fa8217f92b80223bc83aac7db36ec80a84437dbc0d04bbc659cae030d8c9 /uv /usr/local/bin/uv
 
+ARG APK_REGISTRY=https://dl-cdn.alpinelinux.org
+ARG PY_REGISTRY=https://pypi.org/simple
+ARG UV_INDEX="pip"
+ARG UV_INDEX_URL="${PY_REGISTRY}"
+
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -13,16 +18,18 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN apk add --no-cache build-base libffi-dev
+RUN sed -i "s|https://dl-cdn.alpinelinux.org|${APK_REGISTRY}|g" /etc/apk/repositories && \
+  apk add --no-cache build-base libffi-dev
 
 RUN uv venv /app/.venv
 
 RUN uv pip install --no-cache-dir -r requirements.txt
-RUN uv pip install --no-cache-dir httplib2==0.14.0 pycrypto==2.6.1 urllib3==1.24.3
+RUN uv pip install --no-cache-dir httplib2==0.14.0 urllib3==1.24.3
 
 # Runtime stage
 FROM python:3.10.11-alpine3.18 AS runtime
 
+ARG APK_REGISTRY=https://dl-cdn.alpinelinux.org
 ARG GIT_COMMIT="unknown"
 ARG REPO_URL=""
 
@@ -36,7 +43,8 @@ WORKDIR /app
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-RUN apk add --no-cache curl libffi tini && \
+RUN sed -i "s|https://dl-cdn.alpinelinux.org|${APK_REGISTRY}|g" /etc/apk/repositories && \
+  apk add --no-cache curl libffi tini && \
   rm -rf /root/.cache
 
 COPY --from=builder /app/.venv /app/.venv
