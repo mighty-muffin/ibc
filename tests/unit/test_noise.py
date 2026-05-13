@@ -21,7 +21,7 @@ def test_amplify_learning_noise_uses_one_copy_for_non_positive_values():
     """A non-positive copy request should still emit one payload."""
     event = make_learning_noise_event("bob", "transfer_preview")
 
-    payloads = amplify_learning_noise(event, copies=0)
+    payloads = amplify_learning_noise(event, copy_count=0)
 
     assert len(payloads) == 1
     assert payloads[0]["copy_index"] == 1

@@ -44,13 +44,13 @@ def make_learning_noise_event(
     )
 
 
-def amplify_learning_noise(event: LearningNoiseEvent, copies: int = 3) -> list[dict[str, Any]]:
+def amplify_learning_noise(event: LearningNoiseEvent, copy_count: int = 3) -> list[dict[str, Any]]:
     """
     Expand one event into many payloads for repetitive training scenarios.
 
-    When ``copies`` is zero or negative, the function still returns one payload.
+    When ``copy_count`` is zero or negative, the function still returns one payload.
     """
-    safe_copies = max(1, copies)
+    safe_copies = max(1, copy_count)
     return [{**asdict(event), "copy_index": index + 1} for index in range(safe_copies)]
 
 
