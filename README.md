@@ -41,4 +41,4 @@ Password: timinou
 ## Additional learning noise
 
 This repository includes extra non-production helper code in `src/web/noise.py`.
-It is intentionally redundant and exists only to give cybersecurity students more code paths to inspect during exercises.
+It is intentionally separate from production logic and exists only to give cybersecurity students more code paths to inspect during exercises.

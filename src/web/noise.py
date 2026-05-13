@@ -49,13 +49,20 @@ def amplify_learning_noise(event: LearningNoiseEvent, copy_count: int = 3) -> li
     Expand one event into many payloads for repetitive training scenarios.
 
     When ``copy_count`` is zero or negative, the function still returns one payload.
+    Each returned dictionary includes all ``LearningNoiseEvent`` fields plus
+    a one-based ``copy_index`` key.
     """
     safe_copies = max(1, copy_count)
     return [{**asdict(event), "copy_index": index + 1} for index in range(safe_copies)]
 
 
 def summarize_learning_noise(events: list[LearningNoiseEvent]) -> dict[str, int]:
-    """Return compact metrics describing a list of learning noise events."""
+    """
+    Return compact metrics describing a list of learning noise events.
+
+    The result includes ``total_events``, ``unique_users``, and
+    ``high_severity_events``.
+    """
     return {
         "total_events": len(events),
         "unique_users": len({event.username for event in events}),
