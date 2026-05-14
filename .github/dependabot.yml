@@ -5,15 +5,15 @@ version: 2
 #   docker-registry:
 #     type: docker-registry
 #     url: https://registry.hub.docker.com
+#     replaces-base: true
 #     username: ${{secrets.DOCKER_USERNAME}}
 #     password: ${{secrets.DOCKER_PASSWORD}}
-#     replace-base: true
 #   pypi-registry:
 #     type: python-index
 #     url: https://pypi.org/simple
+#     replaces-base: true
 #     username: ${{secrets.PYPI_USERNAME}}
 #     password: ${{secrets.PYPI_PASSWORD}}
-#     replace-base: true
 
 updates:
   - package-ecosystem: "docker"
