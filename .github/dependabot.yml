@@ -95,7 +95,7 @@ updates:
           - "*"
         update-types:
           - "major"
-  - package-ecosystem: "uv"
+  - package-ecosystem: "pip"
     directory: "/"
     # registries:
     #   - pypi-registry

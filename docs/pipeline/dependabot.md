@@ -13,10 +13,16 @@ creating pull requests (PRs) to update them.
 
 | Ecosystem        | Schedule       | Cooldown | Registry   |
 | ---------------- | -------------- | -------- | ---------- |
-| `docker`         | Weekly         | 7 days   | Docker Hub |
+| `docker`         | Monthly        | 7 days   | Docker Hub |
 | `github-actions` | Daily          | 7 days   | GitHub     |
-| `pre-commit`     | Daily          | 7 days   | GitHub     |
-| `uv` (Python)    | Daily (Sunday) | 7 days   | PyPI       |
+| `pre-commit`     | Weekly         | 7 days   | GitHub     |
+| `pip` (Python)   | Daily (Sunday) | 7 days   | PyPI       |
+
+> **Note:** The `pip` ecosystem is used instead of `uv` due to a known Dependabot
+> bug where the `uv` file parser calls `pyenv exec pip install cython` to resolve
+> Cython-based package metadata (triggered by `pycryptodome`) using a pip instance
+> that does not trust Dependabot's internal proxy CA, causing SSL verification
+> failures on every run. Switch back to `uv` once the upstream bug is fixed.
 
 ## Update Grouping
 
