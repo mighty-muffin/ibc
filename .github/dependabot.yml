@@ -95,7 +95,7 @@ updates:
           - "*"
         update-types:
           - "major"
-  - package-ecosystem: "uv"
+  - package-ecosystem: "pip"
     directory: "/"
     # registries:
     #   - pypi-registry
@@ -104,7 +104,7 @@ updates:
       day: "sunday"
       time: "01:00"
       timezone: "America/Toronto"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7
     labels:
