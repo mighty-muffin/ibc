@@ -18,8 +18,8 @@ version: 2
 updates:
   - package-ecosystem: "docker"
     directory: "/"
-    registries:
-      - docker-registry
+    # registries:
+    #   - docker-registry
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
@@ -92,8 +92,8 @@ updates:
           - "major"
   - package-ecosystem: "uv"
     directory: "/"
-    registries:
-      - pypi-registry
+    # registries:
+    #   - pypi-registry
     schedule:
       interval: "daily"
       day: "sunday"
