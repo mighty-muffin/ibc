@@ -19,7 +19,8 @@ updates:
     registries:
       - docker-registry
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7
     ignore:
@@ -43,7 +44,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7
     labels:
@@ -66,10 +67,10 @@ updates:
   - package-ecosystem: "pre-commit"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     cooldown:
       default-days: 7
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "pre-commit"
@@ -96,7 +97,7 @@ updates:
       day: "sunday"
       time: "01:00"
       timezone: "America/Toronto"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7
     labels:
