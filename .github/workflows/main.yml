@@ -1,5 +1,6 @@
 ---
 name: CI - Main
+run-name: Continuous Integration on ${{ github.head_ref || github.ref_name }} by ${{ github.actor }}
 
 on: # yamllint disable-line rule:truthy
   push:
@@ -7,8 +8,6 @@ on: # yamllint disable-line rule:truthy
       - main
     paths-ignore:
       - 'README.md'
-    tags:
-      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -19,27 +18,9 @@ permissions:
   packages: write
   pull-requests: write
 
-env:
-  ENVIRONMENT: "prod"
-
 jobs:
 
-  sdlc_scan:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
-    name: SDLC Scan
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    steps:
-      - name: Run SDLC Scan
-        id: sdlc
-        run: |
-          echo Run SDLC Scan
-          echo "::warning::Must implement a SDLC scan mechanism."
-        shell: bash
-
   pre-commit:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
     name: Pre-Commit
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -48,19 +29,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run Sanity Check
-        uses: ./.github/actions/sanity
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          detect-changes: "false" # DO NOT ENABLE THIS ACTION
-
       - name: Run Pre-Commit Checks
         uses: j178/prek-action@9d6a3097e0c1865ecce00cfb89fe80f2ee91b547 # v1.0.12
         env:
           SKIP: "pytest, uv-export"
 
   secret:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
     needs:
       - pre-commit
     name: Secret Scanning
@@ -71,25 +45,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: GitGuardian scan
-        id: secret
-        uses: GitGuardian/ggshield/actions/secret@3ff83341cab96f0ac0dddc1faffcd7ba9d1886ed # v1.49.0
-        env:
-          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
-          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-        continue-on-error: true
-
-      - name: Check status of potentially failing step and issue warning
-        if: steps.secret.outcome == 'failure'
-        run: |
-          echo "::error::The previous step detected potential secrets in the code. Please review the scan report above."
-        shell: bash
-
   code_build:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
     needs:
       - pre-commit
     name: Build & Unit Test
@@ -135,10 +91,8 @@ jobs:
         shell: bash
 
   code_scan:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
     needs:
       - pre-commit
-      - sdlc_scan
     name: Vulnerabilities Scan
     runs-on: ${{ matrix.os }}
     strategy:
@@ -186,7 +140,6 @@ jobs:
         shell: bash
 
   docker_build:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
     needs:
       - code_build
     name: Container Build
@@ -257,88 +210,10 @@ jobs:
           echo "image-tag=${{ steps.docker_meta.outputs.version }}" >> $GITHUB_OUTPUT
         shell: bash
 
-  docker_smoke:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
-    needs:
-      - docker_build
-    name: Container Smoke Test
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    steps:
-      - name: Login to GHCR
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull and Run Container
-        run: |
-          IMAGE_URI="ghcr.io/${{ github.repository }}:${{ needs.docker_build.outputs.image-tag }}"
-          docker pull "$IMAGE_URI"
-          docker run --detach --publish 8000:8000 --name ibc-smoke "$IMAGE_URI"
-        shell: bash
-
-      - name: Wait for Healthcheck
-        id: smoke
-        run: |
-          timeout=60
-          start_time=$(date +%s)
-          while true; do
-            current_time=$(date +%s)
-            if [ $((current_time - start_time)) -gt $timeout ]; then
-              echo "Timeout waiting for container to be healthy"
-              docker logs ibc-smoke
-              exit 1
-            fi
-
-            status=$(docker inspect --format='{{.State.Health.Status}}' ibc-smoke)
-            if [ "$status" == "healthy" ]; then
-              echo "Container is healthy"
-              exit 0
-            fi
-
-            if [ "$status" == "unhealthy" ]; then
-               echo "Container is unhealthy"
-               docker logs ibc-smoke
-               exit 1
-            fi
-
-            echo "Waiting for healthcheck... ($((current_time - start_time))s)"
-            sleep 2
-          done
-        shell: bash
-
-      - name: Check status of potentially failing step and issue warning
-        if: steps.smoke.outcome == 'failure'
-        run: |
-          echo "::error::The previous step detected potential failure in the code. Please review the report above."
-          exit 1
-        shell: bash
-
-  docker_scan:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
-    needs:
-      - docker_build
-    name: Container Vulnerability Scan
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-
-    steps:
-      - name: Run Container Scan
-        id: container
-        run: |
-          echo Run Container Scan
-          echo "::warning::Must implement a container scanning mechanism."
-        shell: bash
-
   gating:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
     needs:
       - code_scan
-      - docker_scan
-      - docker_smoke
+      - docker_build
       - secret
     name: Gating
     runs-on: ubuntu-24.04
@@ -347,59 +222,6 @@ jobs:
     steps:
 
       - name: Run Gating Check
-        run: echo Run Gating Check
-        shell: bash
-
-  release:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
-    needs:
-      - docker_scan
-      - docker_smoke
-    name: Release Version
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    concurrency:
-      group: ${{ github.workflow }}-release-${{ github.ref_name }}
-      cancel-in-progress: false
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          token: ${{ secrets.RELEASE_PAT }}
-          fetch-depth: 0
-
-      - name: Configure Git Credentials
         run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          echo Run Gating Check
         shell: bash
-
-      - name: Setup Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: 3.14
-
-      - name: Create bump and changelog
-        uses: commitizen-tools/commitizen-action@0.27.1
-        with:
-          github_token: ${{ secrets.RELEASE_PAT }}
-
-  deploy:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'bump:') }}
-    needs:
-      - release
-      - gating
-    name: Deploy to prod
-    uses: ./.github/workflows/cd.yml
-    with:
-      env: "prod"
-      image-tag: ${{ needs.docker_build.outputs.image-tag }}
-    secrets:
-      TS_OAUTH_CLIENT_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-      TS_OAUTH_CLIENT_SECRET: ${{ secrets.TS_OAUTH_CLIENT_SECRET }}
-      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}

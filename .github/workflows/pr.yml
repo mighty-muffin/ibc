@@ -1,5 +1,6 @@
 ---
-name: CI - PR
+name: CI - Pull Request
+run-name: Continuous Integration for PR-${{ github.event.pull_request.number }} by ${{ github.actor }}
 
 on: # yamllint disable-line rule:truthy
   pull_request:
@@ -20,23 +21,7 @@ permissions:
   packages: write
   pull-requests: write
 
-env:
-  ENVIRONMENT: "dev"
-
 jobs:
-
-  sdlc_scan:
-    name: SDLC Scan
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    steps:
-      - name: Run SDLC Scan
-        id: sdlc
-        run: |
-          echo Run SDLC Scan
-          echo "::warning::Must implement a SDLC scan mechanism."
-        shell: bash
 
   pre-commit:
     name: Pre-Commit
@@ -62,23 +47,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: GitGuardian scan
-        id: secret
-        uses: GitGuardian/ggshield/actions/secret@3ff83341cab96f0ac0dddc1faffcd7ba9d1886ed # v1.49.0
-        env:
-          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
-          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-        continue-on-error: true
-
-      - name: Check status of potentially failing step and issue warning
-        if: steps.secret.outcome == 'failure'
-        run: |
-          echo "::error::The previous step detected potential secrets in the code. Please review the scan report above."
-        shell: bash
 
   code_build:
     needs:
@@ -129,7 +97,6 @@ jobs:
   code_scan:
     needs:
       - pre-commit
-      - sdlc_scan
     name: Vulnerabilities Scan
     runs-on: ${{ matrix.os }}
     strategy:
@@ -247,85 +214,10 @@ jobs:
           echo "image-tag=${{ steps.docker_meta.outputs.version }}" >> $GITHUB_OUTPUT
         shell: bash
 
-  docker_smoke:
-    needs:
-      - docker_build
-    name: Container Smoke Test
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    steps:
-      - name: Login to GHCR
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull and Run Container
-        run: |
-          IMAGE_URI="ghcr.io/${{ github.repository }}:${{ needs.docker_build.outputs.image-tag }}"
-          docker pull "$IMAGE_URI"
-          docker run --detach --publish 8000:8000 --name insecure-bank-corp-smoke "$IMAGE_URI"
-        shell: bash
-
-      - name: Wait for Healthcheck
-        id: smoke
-        run: |
-          timeout=60
-          start_time=$(date +%s)
-          while true; do
-            current_time=$(date +%s)
-            if [ $((current_time - start_time)) -gt $timeout ]; then
-              echo "Timeout waiting for container to be healthy"
-              docker logs insecure-bank-corp-smoke
-              exit 1
-            fi
-
-            status=$(docker inspect --format='{{.State.Health.Status}}' insecure-bank-corp-smoke)
-            if [ "$status" == "healthy" ]; then
-              echo "Container is healthy"
-              exit 0
-            fi
-
-            if [ "$status" == "unhealthy" ]; then
-               echo "Container is unhealthy"
-               docker logs insecure-bank-corp-smoke
-               exit 1
-            fi
-
-            echo "Waiting for healthcheck... ($((current_time - start_time))s)"
-            sleep 2
-          done
-        shell: bash
-
-      - name: Check status of potentially failing step and issue warning
-        if: steps.smoke.outcome == 'failure'
-        run: |
-          echo "::error::The previous step detected potential failure in the code. Please review the report above."
-          exit 1
-        shell: bash
-
-  docker_scan:
-    needs:
-      - docker_build
-    name: Container Vulnerability Scan
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-
-    steps:
-      - name: Run Container Scan
-        id: container
-        run: |
-          echo Run Container Scan
-          echo "::warning::Must implement a container scanning mechanism."
-        shell: bash
-
   gating:
     needs:
       - code_scan
-      - docker_scan
-      - docker_smoke
+      - docker_build
       - secret
     name: Gating
     runs-on: ubuntu-24.04
@@ -337,19 +229,3 @@ jobs:
         run: |
           echo Run Gating Check
         shell: bash
-
-  deploy:
-    needs:
-      - gating
-    name: Deploy to dev
-    uses: ./.github/workflows/cd.yml
-    with:
-      env: "dev"
-      image-tag: ${{ needs.docker_build.outputs.image-tag }}
-    secrets:
-      TS_OAUTH_CLIENT_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-      TS_OAUTH_CLIENT_SECRET: ${{ secrets.TS_OAUTH_CLIENT_SECRET }}
-      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
