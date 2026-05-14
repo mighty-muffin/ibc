@@ -31,14 +31,15 @@ jobs:
 
       - name: Install prek CLI
         run: |
-          python -m pip install --user prek==0.3.13
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/j178/prek/releases/download/v0.3.13/prek-installer.sh | sh
+          echo "$(python -m site --user-base)/bin" >> "$GITHUB_PATH"
         shell: bash
 
       - name: Run Pre-Commit Checks
         env:
           SKIP: "pytest, uv-export"
         run: |
-          ~/.local/bin/prek run --show-diff-on-failure --color=always --all-files
+          prek run --show-diff-on-failure --color=always --all-files
         shell: bash
 
   secret:
