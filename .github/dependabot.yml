@@ -25,6 +25,11 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 7
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "ci"
     ignore:
       - dependency-name: "python"
         versions: ["3.11.x", "3.12.x", "3.13.x", "3.14.x", ">=4.0.0"]
