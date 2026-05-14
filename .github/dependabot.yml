@@ -1,17 +1,17 @@
 ---
 version: 2
 
-registries:
+# registries:
 #   docker-registry:
 #     type: docker-registry
 #     url: https://registry.hub.docker.com
 #     replaces-base: true
 #     username: ${{secrets.DOCKER_USERNAME}}
 #     password: ${{secrets.DOCKER_PASSWORD}}
-  pypi-registry:
-    type: python-index
-    url: https://pypi.org/simple
-    replaces-base: true
+#   pypi-registry:
+#     type: python-index
+#     url: https://pypi.org/simple
+#     replaces-base: true
 #     username: ${{secrets.PYPI_USERNAME}}
 #     password: ${{secrets.PYPI_PASSWORD}}
 
@@ -97,8 +97,8 @@ updates:
           - "major"
   - package-ecosystem: "uv"
     directory: "/"
-    registries:
-      - pypi-registry
+    # registries:
+    #   - pypi-registry
     schedule:
       interval: "daily"
       day: "sunday"
