@@ -34,8 +34,12 @@ jobs:
 
       - name: Install prek CLI
         run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/j178/prek/releases/download/v0.3.13/prek-installer.sh | sh
-          echo "$(python -m site --user-base)/bin" >> "$GITHUB_PATH"
+          cat << 'EOF' > /tmp/prek-requirements.txt
+          prek==0.3.13 \
+              --hash=sha256:a5bbb175478438a871e3281d2c3c3f067288af73ad81707a9bdebfd769766c7d
+          EOF
+          python3 -m pip install --user --disable-pip-version-check --no-input --only-binary=:all: --require-hashes -r /tmp/prek-requirements.txt
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
         shell: bash
 
       - name: Run Pre-Commit Checks
