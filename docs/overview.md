@@ -36,6 +36,7 @@ The application includes the following banking features:
 - Fund transfer between accounts
 - Credit activity tracking
 - Administrative user management
+- Extra training-only helper code (`web/noise*.py`) to increase practice surface area with subtle synthetic paths
 
 ## Warning
 
