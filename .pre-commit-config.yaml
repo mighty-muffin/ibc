@@ -29,7 +29,7 @@ repos:
         stages:
           - manual
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.16.0
+    rev: v4.16.2
     hooks:
       - id: commitizen
         name: "commitizen | validate commit messages"
