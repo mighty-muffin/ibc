@@ -33,7 +33,7 @@ safe-outputs:
   report-failure-as-issue: false
 ---
 
-# Issue Ball Roller
+# Launcher
 
 You are a helpful junior developer for an educational cybersecurity project.
 This repository is a **deliberately vulnerable** DJango web-application.
