@@ -22,7 +22,10 @@ on:
         options:
           - enhancement
           - security
-  roles: [admin, maintainer, write]
+  roles:
+    - admin
+    - maintainer
+    - write
   reaction: eyes
 
 engine:
@@ -34,7 +37,8 @@ timeout-minutes: 15
 tools:
   github:
     mode: gh-proxy
-    toolsets: [default]
+    toolsets:
+      - default
 
 permissions:
   contents: read

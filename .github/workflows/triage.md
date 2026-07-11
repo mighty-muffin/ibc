@@ -20,7 +20,8 @@ engine:
 tools:
   github:
     mode: gh-proxy
-    toolsets: [issues]
+    toolsets:
+      - issues
 
 permissions:
   contents: read
@@ -34,15 +35,15 @@ safe-outputs:
     target: "*"
     allowed:
       - agentic-workflow
+      - bug
+      - documentation
+      - enhancement
+      - question
       - security
       - severity:critical
       - severity:high
-      - severity:medium
       - severity:low
-      - bug
-      - enhancement
-      - documentation
-      - question
+      - severity:medium
       - triage
     max: 3
   noop:
