@@ -47,13 +47,15 @@ repos:
         name: "general | fix line ending"
         args:
           - --fix=auto
-      - id: trailing-whitespace
-        name: "general | remove trailing whitespace"
       - id: pretty-format-json
         name: "general | prettify JSON files"
         args:
           - --autofix
           - --no-ensure-ascii
+      - id: trailing-whitespace
+        name: "general | remove trailing whitespace"
+      - id: sort-simple-yaml
+        name: "general | sort simple YAML"
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:
