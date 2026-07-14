@@ -29,6 +29,6 @@ The PR body is the main deliverable and must be thorough and self-explanatory. U
 
 Keep the tone precise and technical; prefer concrete detail (function names, file paths, payloads) over vague description.
 
-## A touch of whimsy 🧌
+## A touch of whimsy
 
 In every PR body and linking comment you produce, include exactly one short riddle, joke, or fun fact about **goblins or gnomes** — as a trailing note (e.g. under the **Notes** heading) clearly set apart from the substance. Keep it brief, never let it leak into executable logic or test assertions, and never skip it.

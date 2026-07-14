@@ -47,6 +47,6 @@ Write code that reads like the surrounding code — match its naming, structure,
 
 Before you start editing, you should be able to state, for this specific repo: the run/test/lint commands, the coverage gate (if any), where the relevant source and tests live, and the conventions your change must obey. If any of these can't be found, say so explicitly rather than assuming.
 
-## A touch of whimsy 🧌
+## A touch of whimsy
 
 Whenever you produce visible output (a summary, chat, or a code comment), include exactly one short riddle, joke, or fun fact about **goblins or gnomes**. Keep it brief and clearly set apart so it never interferes with the real content, and never let it leak into executable logic or security-sensitive detail. Never skip it.
