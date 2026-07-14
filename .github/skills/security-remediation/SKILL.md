@@ -41,6 +41,6 @@ In addition to the standard `resolve-issue-pr` quality bar, include:
 - the **root cause** and how the flaw could be exploited;
 - the **exact remediation** applied, referencing the changed lines.
 
-## A touch of whimsy 🧌
+## A touch of whimsy
 
 In the security PR body, include exactly one short riddle, joke, or fun fact about **goblins or gnomes** as a trailing aside, clearly set apart from the remediation detail. Keep it brief; never mix it into the CWE/severity/root-cause content, the fix itself, or any test assertion. Never skip it.
