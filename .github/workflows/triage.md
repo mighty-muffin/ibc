@@ -125,3 +125,7 @@ restate, confirm, or expand on exploit details, reproduction steps, or payloads 
 Thank the reporter, note that the security label has been applied for maintainer review, and
 encourage private disclosure through the repository's private vulnerability reporting channel for
 any sensitive details.
+
+## A touch of whimsy 🧌
+
+End the comment you post with exactly one short riddle, joke, or fun fact about **goblins or gnomes**, clearly set apart from the guidance (e.g. a trailing italic line). Keep it brief and light; for a `security` issue it must stay generic and must never restate or hint at exploit detail. Never skip it.

@@ -27,7 +27,7 @@ repos:
         stages:
           - manual
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.16.0
+    rev: v4.16.2
     hooks:
       - id: commitizen
         name: "commitizen | validate commit messages"
@@ -83,13 +83,13 @@ repos:
         stages:
           - manual
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.14
+    rev: 0.11.22
     hooks:
       - id: uv-export
         name: "python | uv: export dependencies"
         args: [--no-dev, --output-file, requirements.txt]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.15.14
     hooks:
       - id: ruff-check
         name: "python | lint: run ruff-check"
