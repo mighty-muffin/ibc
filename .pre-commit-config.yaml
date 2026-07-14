@@ -19,8 +19,6 @@ repos:
     hooks:
       - id: identity
         name: "meta | pre-commit hooks"
-        stages:
-          - manual
   - repo: https://github.com/gitguardian/ggshield
     rev: v1.50.4
     hooks:
@@ -49,13 +47,13 @@ repos:
         name: "general | fix line ending"
         args:
           - --fix=auto
-      - id: trailing-whitespace
-        name: "general | remove trailing whitespace"
       - id: pretty-format-json
         name: "general | prettify JSON files"
         args:
           - --autofix
           - --no-ensure-ascii
+      - id: trailing-whitespace
+        name: "general | remove trailing whitespace"
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:
@@ -66,7 +64,10 @@ repos:
           - .config/.markdown-lint.yml
         exclude: |
           (?x)
-          ^README.md
+          ^README.md|
+          ^.github/workflows/*.md
+        stages:
+          - manual
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.38.0
     hooks:
@@ -77,7 +78,10 @@ repos:
           - .config/.yaml-lint.yml
         exclude: |
           (?x)
-          ^mkdocs.yml
+          ^mkdocs.yml|
+          ^.github/workflows/*.yml
+        stages:
+          - manual
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.11.22
     hooks:
